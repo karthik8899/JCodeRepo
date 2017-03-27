@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import com.task.dto.ProductPriceDto;
+import com.task.exception.NotFoundBaseException;
 import com.task.model.Price;
 import com.task.model.Product;
 import com.task.repositories.ProductRepository;
@@ -22,8 +23,16 @@ public class ProductService {
 		return FluentIterable.from(productRepository.findAll()).transform(lengthFunction).toList(); 
 	}
 
+//	public ProductPriceDto getProductById(Long id) {
+//		return createProductPriceDto(productRepository.findOne(id));
+//	}
+	
 	public ProductPriceDto getProductById(Long id) {
-		return createProductPriceDto(productRepository.findOne(id));
+		Product product = productRepository.findOne(id);
+		if(product == null) {
+			throw new NotFoundBaseException("Product not found with ID: " + id);
+		}
+		return createProductPriceDto(product);
 	}
 	
 	public void saveOrUpdateProduct(ProductPriceDto productPriceDto){
@@ -35,7 +44,11 @@ public class ProductService {
 	}
 
 	public List<ProductPriceDto> getProductsByCategory(String category){
-		return FluentIterable.from(productRepository.findByCategory(category)).transform(lengthFunction).toList(); 
+		List<Product> products = productRepository.findByCategory(category);
+		if(products == null || products.isEmpty()) {
+			throw new NotFoundBaseException("Products not found with Category: " + category);
+		}
+		return FluentIterable.from(products).transform(lengthFunction).toList(); 
 	}
 	
 
