@@ -20,6 +20,16 @@ public class GlobalControllerExceptionHandler {
         ErrorMessage errorMessage = createErrorMessage(ex);
         return errorMessage;
     }
+	
+	@ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    ErrorMessage handleException(NumberFormatException ex) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setErrorMessage(ex.getMessage());
+		errorMessage.setDocumentation("Invalid Request");
+        return errorMessage;
+    }
 
 	private ErrorMessage createErrorMessage(NotFoundBaseException ex) {
 		ErrorMessage errorMessage = new ErrorMessage();
